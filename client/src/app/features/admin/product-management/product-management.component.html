@@ -1,0 +1,35 @@
+<h2>Product Management</h2>
+<button (click)="createNewProduct()">Add New Product</button>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Price</th>
+    <th>Actions</th>
+  </tr>
+  <tr *ngFor="let product of products">
+    <td>{{ product.name }}</td>
+    <td>{{ product.price | currency }}</td>
+    <td>
+      <button (click)="selectProduct(product)">Edit</button>
+      <button (click)="deleteProduct(product)">Delete</button>
+    </td>
+  </tr>
+</table>
+
+<div *ngIf="selectedProduct">
+  <h3>{{ isNewProduct ? 'Create New Product' : 'Edit Product' }}</h3>
+  <form (ngSubmit)="saveProduct()">
+    <label>
+      Name:
+      <input [(ngModel)]="selectedProduct.name" name="name" required />
+    </label>
+    <br />
+    <label>
+      Price:
+      <input type="number" [(ngModel)]="selectedProduct.price" name="price" required />
+    </label>
+    <br />
+    <button type="submit">{{ isNewProduct ? 'Create' : 'Update' }}</button>
+    <button type="button" (click)="cancel()">Cancel</button>
+  </form>
+</div>

@@ -1,0 +1,36 @@
+<div class="register-container">
+  <div class="register-box">
+    <h1 class="register-title">Create account</h1>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" formControlName="username" class="form-control" />
+        <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error">
+          Please enter your username.
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" formControlName="password" class="form-control" />
+        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error">
+          Please enter your password.
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="confirmPassword">Re-enter Password</label>
+        <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" />
+        <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="error">
+          Please re-enter your password.
+        </div>
+        <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched" class="error">
+          Passwords do not match.
+        </div>
+      </div>
+      <button type="submit" class="register-button" [disabled]="registerForm.invalid">Create your account</button>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </form>
+    <div class="login-link">
+      <a routerLink="/login">Already have an account? Sign in</a>
+    </div>
+  </div>
+</div>

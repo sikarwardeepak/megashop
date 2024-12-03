@@ -1,0 +1,19 @@
+<h2>Order Management</h2>
+<table>
+  <tr>
+    <th>Order ID</th>
+    <th>User</th>
+    <th>Total Amount</th>
+    <th>Status</th>
+  </tr>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.id }}</td>
+    <td>{{ order.user.username }}</td>
+    <td>{{ order.totalAmount | currency }}</td>
+    <td>
+      <select [(ngModel)]="order.status" (change)="updateStatus(order)">
+        <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+      </select>
+    </td>
+  </tr>
+</table>

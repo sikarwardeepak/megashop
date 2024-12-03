@@ -1,0 +1,27 @@
+<div class="login-container">
+  <div class="login-box">
+    <h1 class="login-title">Sign-In</h1>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" formControlName="username" class="form-control" />
+        <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error">
+          Please enter your username.
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" formControlName="password" class="form-control" />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error">
+          Please enter your password.
+        </div>
+      </div>
+      <button type="submit" class="login-button" [disabled]="loginForm.invalid">Sign-In</button>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </form>
+    <div class="register-link">
+      <p>New here?</p>
+      <a routerLink="/register" class="register-button">Create your account</a>
+    </div>
+  </div>
+</div>
