@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService, Product, Category } from '../../../services/product.service';
+import { ProductService, Product } from '../../../services/product.service';
+import { CategoryService, Category } from '../../../services/category.service';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +18,7 @@ export class ProductManagementComponent implements OnInit {
   selectedProduct: ProductRequest | null = null;
   view: string = 'view';
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService, private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -32,7 +33,7 @@ export class ProductManagementComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.productService.getCategories().subscribe((data) => {
+    this.categoryService.getCategories().subscribe((data) => {
       this.categories = data;
     });
   }

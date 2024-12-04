@@ -1,43 +1,108 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { ProductService, Product } from '../../services/product.service';
+import { Category, CategoryService } from '../../services/category.service';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  welcomeMessage: string = 'Welcome to Our E-Commerce Store!';
-  featuredProducts: { name: string; description: string; price: number; image: string }[] = [];
+  products: Product[] = [];
+  categories: Category[] = [];
+  filters: any = {
+    name: '',
+    category: '',
+    minPrice: null,
+    maxPrice: null
+  };
 
-  constructor() {}
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadFeaturedProducts();
+    this.route.queryParams.subscribe(params => {
+      this.filters.name = params['name'] || '';
+      this.filters.category = params['category'] || '';
+      this.filters.minPrice = params['minPrice'] || null;
+      this.filters.maxPrice = params['maxPrice'] || null;
+      this.applyFilters();
+    });
+    this.loadCategories();
   }
 
-  loadFeaturedProducts(): void {
-    // Mock data for demonstration; replace with API call or dynamic data
-    this.featuredProducts = [
-      {
-        name: 'Smartphone',
-        description: 'Latest model with advanced features.',
-        price: 299.99,
-        image: 'assets/images/smartphone.jpg',
-      },
-      {
-        name: 'Laptop',
-        description: 'High-performance laptop for professionals.',
-        price: 799.99,
-        image: 'assets/images/laptop.jpg',
-      },
-      {
-        name: 'Headphones',
-        description: 'Noise-cancelling headphones with superior sound quality.',
-        price: 199.99,
-        image: 'assets/images/headphones.jpg',
-      },
-    ];
+  loadProducts(): void {
+    this.productService.getProducts().subscribe((data: Product[]) => {
+      this.products = data;
+    });
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe((data: Category[]) => {
+      this.categories = data;
+    });
+  }
+
+  onSearch(event: any): void {
+    this.filters.name = event.target.value.toLowerCase();
+    this.updateUrl();
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    const params: any = {};
+    if (this.filters.name) {
+      params.name = this.filters.name;
+    }
+    if (this.filters.category) {
+      const selectedCategory = this.categories.find(cat => cat.name === this.filters.category);
+      if (selectedCategory) {
+        params.categoryId = selectedCategory.id;
+      }
+    }
+    if (this.filters.minPrice !== null) {
+      params.minPrice = this.filters.minPrice;
+    }
+    if (this.filters.maxPrice !== null) {
+      params.maxPrice = this.filters.maxPrice;
+    }
+    this.productService.getProductsByFilters(params).subscribe((data) => {
+      this.products = data;
+    });
+    this.updateUrl();
+  }
+
+  updateUrl(): void {
+    const queryParams: any = {};
+    if (this.filters.name) {
+      queryParams.name = this.filters.name;
+    }
+    if (this.filters.category) {
+      queryParams.category = this.filters.category;
+    }
+    if (this.filters.minPrice !== null) {
+      queryParams.minPrice = this.filters.minPrice;
+    }
+    if (this.filters.maxPrice !== null) {
+      queryParams.maxPrice = this.filters.maxPrice;
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge'
+    });
+  }
+
+  addToCart(product: Product): void {
+    // Implement add to cart logic here
+    console.log('Product added to cart:', product);
   }
 }

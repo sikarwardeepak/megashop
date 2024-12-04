@@ -1,41 +1,40 @@
 <div class="home-container">
-    <h1>{{ welcomeMessage }}</h1>
-  
-    <!-- Hero Section -->
-    <div class="hero-section">
-      <img src="assets/images/hero-banner.jpg" alt="Hero Banner" class="hero-image" />
-      <p class="hero-text">Shop the best products at amazing prices!</p>
+  <div class="sidebar">
+    <div class="search-bar">
+      <input type="text" placeholder="Search products..." (input)="onSearch($event)" [value]="filters.name" />
     </div>
-  
-    <!-- Product Categories Section -->
-    <div class="categories">
-      <h2>Shop by Categories</h2>
-      <div class="category-cards">
-        <div class="category-card">
-          <img src="assets/images/category1.jpg" alt="Category 1" />
-          <h3>Electronics</h3>
-        </div>
-        <div class="category-card">
-          <img src="assets/images/category2.jpg" alt="Category 2" />
-          <h3>Clothing</h3>
-        </div>
-        <div class="category-card">
-          <img src="assets/images/category3.jpg" alt="Category 3" />
-          <h3>Home Appliances</h3>
-        </div>
-      </div>
-    </div>
-  
-    <!-- Featured Products Section -->
-    <div class="featured-products">
-      <h2>Featured Products</h2>
-      <div class="product-list">
-        <div class="product-card" *ngFor="let product of featuredProducts">
-          <img [src]="product.image" alt="{{ product.name }}" />
-          <h3>{{ product.name }}</h3>
-          <p>{{ product.description }}</p>
-          <p class="price">₹{{ product.price }}</p>
-        </div>
+    <h3>Filters</h3>
+    <form (ngSubmit)="applyFilters()">
+      <label>
+        Category:
+        <select [(ngModel)]="filters.category" name="category">
+          <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+        </select>
+      </label>
+      <br />
+      <label>
+        Min Price:
+        <input type="number" [(ngModel)]="filters.minPrice" name="minPrice" />
+      </label>
+      <br />
+      <label>
+        Max Price:
+        <input type="number" [(ngModel)]="filters.maxPrice" name="maxPrice" />
+      </label>
+      <br />
+      <button type="submit">Apply Filters</button>
+    </form>
+  </div>
+  <div class="content">
+    <div class="product-list">
+      <div *ngFor="let product of products" class="product-card">
+        <img [src]="product.imageUrl" alt="{{ product.name }}" />
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p>Price: {{ product.price | currency }}</p>
+        <p>Category: {{ product.category.name }}</p>
+        <button (click)="addToCart(product)">Add to Cart</button>
       </div>
     </div>
   </div>
+</div>

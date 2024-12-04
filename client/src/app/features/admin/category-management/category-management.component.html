@@ -1,1 +1,39 @@
-<p>category-management works!</p>
+<div class="category-management-container">
+    <div class="sidebar">
+      <ul>
+        <li (click)="setView('view')">View Categories</li>
+        <li (click)="setView('create')">Create Category</li>
+      </ul>
+    </div>
+    <div class="content">
+      <div *ngIf="view === 'view'">
+        <h2>View Categories</h2>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Actions</th>
+          </tr>
+          <tr *ngFor="let category of categories">
+            <td>
+              <input [(ngModel)]="category.name" (blur)="updateCategory(category)" />
+            </td>
+            <td>
+              <button (click)="deleteCategory(category)">Delete</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div *ngIf="view === 'create'">
+        <h2>Create Category</h2>
+        <form (ngSubmit)="saveCategory()">
+          <label>
+            Name:
+            <input [(ngModel)]="newCategory.name" name="name" required />
+          </label>
+          <br />
+          <button type="submit">Create</button>
+          <button type="button" (click)="cancel()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>

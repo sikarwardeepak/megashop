@@ -47,15 +47,11 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public List<Product> searchProductsByName(@RequestParam String name) {
-        return productService.searchProductsByName(name);
-    }
-
-    @GetMapping("/filter")
     public List<Product> getProductsByFilters(
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
-        return productService.getProductsByFilters(categoryId, minPrice, maxPrice);
+        return productService.getProductsByFilters(name, categoryId, minPrice, maxPrice);
     }
 }

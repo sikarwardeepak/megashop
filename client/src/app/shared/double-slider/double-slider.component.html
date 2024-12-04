@@ -1,0 +1,21 @@
+<div class="slider-container">
+  <div class="slider-track"></div>
+  <div
+    class="slider-range"
+    [style.left.%]="minPosition"
+    [style.width.%]="maxPosition - minPosition"
+  ></div>
+  <div
+    class="slider-thumb min-thumb"
+    [style.left.%]="minPosition"
+    (mousedown)="onMouseDownMin($event)"
+  ></div>
+  <div
+    class="slider-thumb max-thumb"
+    [style.left.%]="maxPosition"
+    (mousedown)="onMouseDownMax($event)"
+  ></div>
+</div>
+<div class="range-values">
+  <span>${{ range[0] }}</span> - <span>${{ range[1] }}</span>
+</div>

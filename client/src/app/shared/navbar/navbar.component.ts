@@ -1,27 +1,32 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 import axios from 'axios';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
 export class NavbarComponent implements OnInit {
   isLoggedIn = false;
+  searchQuery: string = '';
 
   constructor(
     public authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.checkLoginStatus();
+    // this.route.queryParams.subscribe(params => {
+    //   this.searchQuery = params['name'] || '';
+    // });
   }
 
   checkLoginStatus(): void {
@@ -30,19 +35,22 @@ export class NavbarComponent implements OnInit {
   }
 
   async onSearch(event: any) {
-    const query = event.target.value;
-    if (query.length > 2) { // Start searching after 3 characters
-      try {
-        const response = await axios.get(`/api/search?q=${query}`);
-        const products = response.data;
-        // Handle the search results, e.g., navigate to a search results page
-        this.router.navigate(['/search'], { queryParams: { q: query } });
-      } catch (error) {
-        console.error('Error fetching search results', error);
-      }
-    }
+    const searchQuery = event.target.value.toLowerCase().trim();
+    this.updateUrl();
   }
 
+  updateUrl(): void {
+    const queryParams: any = {};
+    if (this.searchQuery) {
+      queryParams.name = this.searchQuery;
+    } else {
+      queryParams.name = null; // Remove the query parameter if the search query is empty
+    }
+    this.router.navigate(['/products'], {
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
   logout(): void {
     localStorage.removeItem('authToken');
     this.isLoggedIn = false;

@@ -59,18 +59,8 @@ export class ProductService {
     return from(this.axiosInstance.delete<void>(`${this.apiUrl}/${id}`).then(response => response.data));
   }
 
-  getProductsByFilters(categoryName?: string, minPrice?: number, maxPrice?: number): Observable<Product[]> {
-    let params = new URLSearchParams();
-    if (categoryName) {
-      params.append('categoryName', categoryName);
-    }
-    if (minPrice) {
-      params.append('minPrice', minPrice.toString());
-    }
-    if (maxPrice) {
-      params.append('maxPrice', maxPrice.toString());
-    }
-    return from(this.axiosInstance.get<Product[]>(`${this.apiUrl}/filter`, { params }).then(response => response.data));
+  getProductsByFilters(params: any): Observable<Product[]> {
+    return from(this.axiosInstance.get<Product[]>(`${this.apiUrl}/search`, { params }).then(response => response.data));
   }
   
   getCategories(): Observable<Category[]> {

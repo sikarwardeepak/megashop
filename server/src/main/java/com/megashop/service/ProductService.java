@@ -40,11 +40,8 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<Product> searchProductsByName(String name) {
-        return productRepository.findByNameContaining(name);
-    }
-
-    public List<Product> getProductsByFilters(Long categoryId, Double minPrice, Double maxPrice) {
-        return productRepository.findByFilters(categoryId, minPrice, maxPrice);
+    @Transactional(readOnly = true)
+    public List<Product> getProductsByFilters(String name, Long categoryId, Double minPrice, Double maxPrice) {
+        return productRepository.findByFilters(name, categoryId, minPrice, maxPrice);
     }
 }

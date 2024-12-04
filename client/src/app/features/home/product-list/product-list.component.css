@@ -1,0 +1,254 @@
+/* Enhanced CSS for Rakuten-like Product List with Full Image and Details Below */
+
+/* Ensure consistent box sizing */
+* {
+  box-sizing: border-box;
+}
+
+/* Style the home container */
+.home-container {
+  display: flex;
+  flex-direction: row;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+/* Style the sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #fff;
+  padding: 15px; /* Reduced padding for a more compact sidebar */
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  color: #111;
+}
+
+.sidebar form {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar label {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.sidebar select,
+.sidebar input[type="range"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.sidebar button[type="submit"] {
+  background-color: black; /* Rakuten red */
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.sidebar button[type="submit"]:hover {
+  background-color: black; /* Darker shade of Rakuten red */
+}
+
+/* Style the content area */
+.content {
+  flex: 1;
+  padding: 15px; /* Reduced padding for a more compact layout */
+}
+
+/* Style the product list to display multiple products per row */
+.product-list {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  gap: 10px; /* Reduced gap between product cards */
+   /* Evenly distribute product cards */
+}
+
+/* Style each product card */
+.product-card {
+  display: flex;
+  flex-direction: column; /* Switch to column layout */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 15px; /* Reduced padding for a shorter card */
+  transition: box-shadow 0.3s ease;
+  flex: 1 1 calc(25% - 15px); /* Four cards per row */
+  max-width: calc(25% - 15px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a premium look */
+}
+
+.product-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+/* Style the product image container */
+.product-image {
+  width: 100%; /* Full width image */
+  height: 200px; /* Set a fixed height or adjust as needed */
+  flex-shrink: 0;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the container */
+}
+
+/* Style the product details section */
+.product-details {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px; /* Space between image and details */
+  flex: 1;
+}
+
+/* Style the product title */
+.product-title {
+  font-size: 16px; /* Consistent font size */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px; /* Reduced margin below the title */
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Truncate overflowed text with ellipsis */
+  white-space: nowrap;
+}
+
+/* Style the product description */
+.product-description {
+  font-size: 12px; /* Smaller font size for compact description */
+  color: #555;
+  margin-bottom: 10px; /* Reduced margin below the description */
+  flex-grow: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+}
+
+/* Style the product metadata (price and category) */
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* Reduced margin below metadata */
+}
+
+.product-price {
+  font-size: 14px; /* Smaller font size for price */
+  font-weight: bold;
+  color: black; /* Rakuten red */
+}
+
+.product-category {
+  font-size: 11px;
+  padding: 4px 8px;
+  background-color: #e7e9ec;
+  color: #007185;
+  border-radius: 10px; /* Slightly reduced border-radius */
+}
+
+/* Style the "Add to Bag" button */
+.add-to-bag {
+  background-color: green; /* Rakuten red */
+  color: #fff;
+  padding: 10px 20px; /* Slightly larger padding for a premium feel */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-size: 14px; /* Consistent font size */
+  align-self: flex-start; /* Align button to the start of the details */
+}
+
+.add-to-bag:hover {
+  background-color: green; /* Darker shade of Rakuten red */
+  transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+/* Responsive Design: Adjust layout on smaller screens */
+@media (max-width: 1200px) {
+  .product-card {
+    flex: 1 1 calc(33.333% - 10px); /* Three cards per row */
+    max-width: calc(33.333% - 10px);
+  }
+}
+
+@media (max-width: 992px) {
+  .product-card {
+    flex: 1 1 calc(50% - 10px); /* Two cards per row */
+    max-width: calc(50% - 10px);
+  }
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    padding: 15px; /* Consistent padding for mobile */
+  }
+
+  .product-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: auto; /* Allow height to adjust on smaller screens */
+    padding: 15px;
+    flex: 1 1 100%; /* One card per row */
+    max-width: 100%;
+  }
+
+  .product-image {
+    width: 100%; /* Full width image on mobile */
+    height: 150px; /* Adjust height as needed for mobile */
+  }
+
+  .product-details {
+    margin-left: 0;
+    margin-top: 10px; /* Reduced top margin for tighter spacing */
+  }
+
+  .product-title {
+    font-size: 16px; /* Consistent font size on mobile */
+    white-space: normal; /* Allow title to wrap on mobile */
+  }
+
+  .product-description {
+    font-size: 12px;
+    -webkit-line-clamp: 2; /* Limit to 2 lines on smaller screens */
+  }
+
+  .product-price {
+    font-size: 14px;
+  }
+
+  .product-category {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .add-to-bag {
+    width: 100%;
+    padding: 8px 0; /* Full width button on mobile */
+    font-size: 14px;
+  }
+}

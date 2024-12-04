@@ -3,16 +3,17 @@
       <a class="navbar-brand" routerLink="/">E-Commerce</a>
 
       <div class="search-bar">
-        <input type="text" placeholder="Search products..." (input)="onSearch($event)" />
+        <input type="text" placeholder="Search products..." (input)="onSearch($event)" [(ngModel)]="searchQuery" />
       </div>
       
       <ul class="navbar-links">
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/" routerLinkActive="active">Home</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/about" routerLinkActive="active">About</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/products" routerLinkActive="active">Products</a></li>
-        <li *ngIf="!authService.isAuthenticated()"><a routerLink="/cart" routerLinkActive="active">Cart</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/login" routerLinkActive="active">Login</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/register" routerLinkActive="active">Register</a></li>
+        <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/cart" routerLinkActive="active">Cart</a></li>
+        <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/order-history" routerLinkActive="active">Order History</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a (click)="logout()" routerLinkActive="active">Logout</a></li>
         <li *ngIf="authService.isAuthenticated() && authService.isAdmin()"><a routerLink="/admin" routerLinkActive="active">Admin</a></li>

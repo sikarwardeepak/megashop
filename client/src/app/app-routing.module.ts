@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 // Import your components here
 import { HomeComponent } from './features/home/home.component';
 import { AboutComponent } from './features/about/about.component';
-import { ProductListComponent } from './features/product-list/product-list.component';
+import { ProductListComponent } from './features/home/product-list/product-list.component';
 import { ProductDetailComponent } from './features/product-detail/product-detail.component';
 import { CartComponent } from './features/cart/cart.component';
 import { CheckoutComponent } from './features/checkout/checkout.component';
