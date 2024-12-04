@@ -1,35 +1,113 @@
-<h2>Product Management</h2>
-<button (click)="createNewProduct()">Add New Product</button>
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Price</th>
-    <th>Actions</th>
-  </tr>
-  <tr *ngFor="let product of products">
-    <td>{{ product.name }}</td>
-    <td>{{ product.price | currency }}</td>
-    <td>
-      <button (click)="selectProduct(product)">Edit</button>
-      <button (click)="deleteProduct(product)">Delete</button>
-    </td>
-  </tr>
-</table>
-
-<div *ngIf="selectedProduct">
-  <h3>{{ isNewProduct ? 'Create New Product' : 'Edit Product' }}</h3>
-  <form (ngSubmit)="saveProduct()">
-    <label>
-      Name:
-      <input [(ngModel)]="selectedProduct.name" name="name" required />
-    </label>
-    <br />
-    <label>
-      Price:
-      <input type="number" [(ngModel)]="selectedProduct.price" name="price" required />
-    </label>
-    <br />
-    <button type="submit">{{ isNewProduct ? 'Create' : 'Update' }}</button>
-    <button type="button" (click)="cancel()">Cancel</button>
-  </form>
+<div class="product-management-container">
+  <div class="sidebar">
+    <ul>
+      <li (click)="setView('view')">View Products</li>
+      <li (click)="setView('create')">Create Product</li>
+    </ul>
+  </div>
+  <div class="content">
+    <div *ngIf="view === 'view'">
+      <h2>View Products</h2>
+      <input type="text" placeholder="Search products..." (input)="onSearch($event)" />
+      <table>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let product of filteredProducts">
+          <td><img [src]="product.imageUrl" alt="{{ product.name }}" width="50" /></td>
+          <td>
+            <input [(ngModel)]="product.name" (blur)="updateProduct(mapToProductRequest(product))" />
+          </td>
+          <td>
+            <input type="number" [(ngModel)]="product.price" (blur)="updateProduct(mapToProductRequest(product))" />
+          </td>
+          <td>
+            <button (click)="deleteProduct(product)">Delete</button>
+            <button (click)="selectProduct(product)">Edit</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div *ngIf="view === 'create'">
+      <h2>Create Product</h2>
+      <form (ngSubmit)="saveProduct()">
+        <label>
+          Name:
+          <input [(ngModel)]="newProduct.name" name="name" required />
+        </label>
+        <br />
+        <label>
+          Description:
+          <textarea [(ngModel)]="newProduct.description" name="description" required></textarea>
+        </label>
+        <br />
+        <label>
+          Price:
+          <input type="number" [(ngModel)]="newProduct.price" name="price" required />
+        </label>
+        <br />
+        <label>
+          Quantity:
+          <input type="number" [(ngModel)]="newProduct.quantity" name="quantity" required />
+        </label>
+        <br />
+        <label>
+          Category:
+          <select [(ngModel)]="newProduct.categoryName" name="categoryName" required>
+            <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+          </select>
+        </label>
+        <br />
+        <label>
+          Image URL:
+          <input [(ngModel)]="newProduct.imageUrl" name="imageUrl" required />
+        </label>
+        <br />
+        <button type="submit">Create</button>
+        <button type="button" (click)="cancel()">Cancel</button>
+      </form>
+    </div>
+    <div *ngIf="view === 'edit' && selectedProduct">
+      <h2>Edit Product</h2>
+      <form (ngSubmit)="updateProduct(selectedProduct)">
+        <label>
+          Name:
+          <input [(ngModel)]="selectedProduct.name" name="name" required />
+        </label>
+        <br />
+        <label>
+          Description:
+          <textarea [(ngModel)]="selectedProduct.description" name="description" required></textarea>
+        </label>
+        <br />
+        <label>
+          Price:
+          <input type="number" [(ngModel)]="selectedProduct.price" name="price" required />
+        </label>
+        <br />
+        <label>
+          Quantity:
+          <input type="number" [(ngModel)]="selectedProduct.quantity" name="quantity" required />
+        </label>
+        <br />
+        <label>
+          Category:
+          <select [(ngModel)]="selectedProduct.categoryName" name="categoryName" required>
+            <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+          </select>
+        </label>
+        <br />
+        <label>
+          Image URL:
+          <input [(ngModel)]="selectedProduct.imageUrl" name="imageUrl" required />
+        </label>
+        <br />
+        <button type="submit">Update</button>
+        <button type="button" (click)="cancel()">Cancel</button>
+      </form>
+    </div>
+  </div>
 </div>

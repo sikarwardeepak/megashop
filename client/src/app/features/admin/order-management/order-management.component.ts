@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { OrderService, Order } from '../../services/order.service';
+import { OrderService, Order } from '../../../services/order.service';
 import { NgModule } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';

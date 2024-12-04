@@ -27,15 +27,17 @@ public class ProductController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    public Product createProduct(@RequestBody ProductRequest productRequest) {
+        Product product = productRequest.toProduct();
+        return productService.saveProduct(product, productRequest.getCategoryName());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public Product updateProduct(@PathVariable Long id, @RequestBody ProductRequest productRequest) {
+        Product product = productRequest.toProduct();
         product.setId(id);
-        return productService.saveProduct(product);
+        return productService.saveProduct(product, productRequest.getCategoryName());
     }
 
     @DeleteMapping("/{id}")

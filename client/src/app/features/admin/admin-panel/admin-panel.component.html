@@ -1,1 +1,13 @@
-<p>admin-panel works!</p>
+<div class="admin-panel">
+    <div class="sidebar">
+        <h1>Admin Panel</h1>
+      <ul>
+        <li><a routerLink="manage-products" routerLinkActive="active">Manage Products</a></li>
+        <li><a routerLink="manage-categories" routerLinkActive="active">Manage Categories</a></li>
+        <li><a routerLink="manage-orders" routerLinkActive="active">Manage Orders</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>

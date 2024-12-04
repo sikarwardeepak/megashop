@@ -1,41 +1,17 @@
-package com.megashop.entity;
+package com.megashop.controller;
 
-import jakarta.persistence.*;
+import com.megashop.entity.Product;
 
-@Entity
-@Table(name = "products")
-public class Product {
+public class ProductRequest {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private String description;
-
-    @Column(nullable = false)
     private Double price;
-
-    @Column(nullable = false)
     private Integer quantity;
+    private String categoryName;
+    private String imageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
-    private String imageUrl; // Optional: URL for the product image
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    // Getters and setters
     public String getName() {
         return name;
     }
@@ -68,12 +44,12 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Category getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getImageUrl() {
@@ -82,5 +58,15 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Product toProduct() {
+        Product product = new Product();
+        product.setName(this.name);
+        product.setDescription(this.description);
+        product.setPrice(this.price);
+        product.setQuantity(this.quantity);
+        product.setImageUrl(this.imageUrl);
+        return product;
     }
 }

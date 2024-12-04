@@ -9,6 +9,9 @@ import { LoginComponent } from './core/auth/login/login.component';
 import { RegisterComponent } from './core/auth/register/register.component';
 import { AdminPanelComponent } from './features/admin/admin-panel/admin-panel.component';
 import { AuthGuard } from './core/auth/auth.guard'; // Import your AuthGuard
+import { OrderManagementComponent } from './features/admin/order-management/order-management.component';
+import { CategoryManagementComponent } from './features/admin/category-management/category-management.component';
+import { ProductManagementComponent } from './features/admin/product-management/product-management.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,7 +25,12 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminPanelComponent,
-    canActivate: [AuthGuard], // Admin panel is protected
+    canActivate: [AuthGuard],
+    children: [
+      { path: 'manage-products', component: ProductManagementComponent },
+      { path: 'manage-categories', component: CategoryManagementComponent },
+      { path: 'manage-orders', component: OrderManagementComponent },
+    ],
   },
   { path: '**', redirectTo: '' }, // Fallback route
 ];

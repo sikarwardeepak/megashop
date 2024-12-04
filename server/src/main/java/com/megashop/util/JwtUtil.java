@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -33,12 +35,16 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public boolean validateToken(String token, String username) {
-        Claims claims = extractClaims(token);
-        return claims.getSubject().equals(username) && !isTokenExpired(claims);
+    public String getUsername(String token) {
+        return extractClaims(token).getSubject();
     }
 
-    private boolean isTokenExpired(Claims claims) {
-        return claims.getExpiration().before(new Date());
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = getUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    private boolean isTokenExpired(String token) {
+        return extractClaims(token).getExpiration().before(new Date());
     }
 }

@@ -18,6 +18,8 @@ import { CoreModule } from './core/core.module';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CategoryManagementComponent } from './features/admin/category-management/category-management.component';
+import { OrderManagementComponent } from './features/admin/order-management/order-management.component';
 
 @NgModule({
   declarations: [
@@ -25,9 +27,14 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
-    NavbarComponent,
     FormsModule,
     ReactiveFormsModule,
+    AppRoutingModule,
+    SharedModule,
+    CoreModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    NavbarComponent,
     HomeComponent,
     AboutComponent,
     ProductListComponent,
@@ -37,11 +44,9 @@ import { HttpClientModule } from '@angular/common/http';
     AdminPanelComponent,
     LoginComponent,
     RegisterComponent,
-    AppRoutingModule,
-    SharedModule,
-    CoreModule,
-    ReactiveFormsModule,
-    HttpClientModule  
+    CategoryManagementComponent,
+    OrderManagementComponent,
+    ProductDetailComponent
   ],
   providers: [],
   // No need to bootstrap AppComponent here, since it's handled in main.ts

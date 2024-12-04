@@ -1,18 +1,26 @@
 package com.megashop.service;
 
+import com.megashop.entity.Category;
 import com.megashop.entity.Product;
+import com.megashop.repository.CategoryRepository;
 import com.megashop.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Transactional(readOnly = true)
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
@@ -21,10 +29,13 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
-    public Product saveProduct(Product product) {
+    @Transactional
+    public Product saveProduct(Product product, String categoryName) {
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseGet(() -> categoryRepository.save(new Category(categoryName)));
+        product.setCategory(category);
         return productRepository.save(product);
     }
-
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }

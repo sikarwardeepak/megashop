@@ -65,8 +65,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                 .requestMatchers("/api/stripe/**").permitAll()
                 .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider()) // Use the configured authentication provider

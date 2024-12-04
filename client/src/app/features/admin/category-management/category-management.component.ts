@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-admin-panel',
+  selector: 'app-category-management',
   imports: [CommonModule, RouterModule],
-  templateUrl: './admin-panel.component.html',
-  styleUrl: './admin-panel.component.css'
+  templateUrl: './category-management.component.html',
+  styleUrl: './category-management.component.css'
 })
-export class AdminPanelComponent {
+export class CategoryManagementComponent {
 
 }

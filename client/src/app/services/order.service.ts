@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import axios from 'axios';
+import { Observable, from } from 'rxjs';
 
 export interface Order {
   id: number;
-  user: any; // Replace with a User interface if available
+  user: any;
   totalAmount: number;
+  orderDate: string;
   status: string;
-  // Add other order properties
 }
 
 @Injectable({
@@ -16,13 +16,13 @@ export interface Order {
 export class OrderService {
   private apiUrl = 'http://localhost:8081/api/orders';
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   getOrders(): Observable<Order[]> {
-    return this.http.get<Order[]>(`${this.apiUrl}/all`);
+    return from(axios.get<Order[]>(`${this.apiUrl}/all`).then(response => response.data));
   }
 
   updateOrderStatus(id: number, status: string): Observable<Order> {
-    return this.http.put<Order>(`${this.apiUrl}/${id}`, { status });
+    return from(axios.put<Order>(`${this.apiUrl}/${id}`, { status }).then(response => response.data));
   }
 }

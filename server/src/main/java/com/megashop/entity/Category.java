@@ -1,7 +1,6 @@
 package com.megashop.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -12,9 +11,13 @@ public class Category {
     private Long id;
 
     private String name;
+    
+    public Category(String name) {
+        this.name = name;
+    }
 
-    @OneToMany(mappedBy = "category")
-    private List<Product> products;
+    public Category() {
+    }
 
     // Getters and setters
     public Long getId() {
@@ -31,13 +34,5 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
     }
 }
