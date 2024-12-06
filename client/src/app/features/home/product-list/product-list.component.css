@@ -161,6 +161,12 @@
   border-radius: 10px; /* Slightly reduced border-radius */
 }
 
+.low-stock {
+  color: grey;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
 /* Style the "Add to Bag" button */
 .add-to-bag {
   background-color: green; /* Rakuten red */
@@ -178,6 +184,12 @@
 .add-to-bag:hover {
   background-color: green; /* Darker shade of Rakuten red */
   transform: scale(1.05); /* Slightly enlarge the button on hover */
+}
+
+/* Style for the out-of-stock button */
+.add-to-bag.out-of-stock {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 /* Responsive Design: Adjust layout on smaller screens */

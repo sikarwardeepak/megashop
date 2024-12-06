@@ -1,1 +1,32 @@
-<p>product-detail works!</p>
+<div class="product-detail-container" *ngIf="!isLoading && product; else loadingOrError">
+  <div class="product-image">
+    <img [src]="product!.imageUrl" [alt]="product!.name" />
+  </div>
+  <div class="product-info">
+    <h1 class="product-name">{{ product!.name }}</h1>
+    <p class="product-description">{{ product!.description }}</p>
+    <div class="product-meta">
+      <span class="product-price">{{ product!.price | currency }}</span>
+      <span class="product-category">{{ product!.category.name }}</span>
+    </div>
+    <div *ngIf="product!.quantity > 0 && product!.quantity < 5" class="low-stock">
+      Few items left
+    </div>
+    <!-- <button 
+      (click)="addToCart(product!)" 
+      class="add-to-bag" 
+      [ngClass]="{'out-of-stock': product!.quantity === 0}"
+      [disabled]="product!.quantity === 0">
+      {{ product!.quantity === 0 ? 'Out of Stock' : 'Add to Bag' }}
+    </button> -->
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <div *ngIf="isLoading" class="loading">
+    Loading product details...
+  </div>
+  <div *ngIf="!isLoading && errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+</ng-template>

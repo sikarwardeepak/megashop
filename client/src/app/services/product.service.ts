@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance } from 'axios';
-import { Observable, from } from 'rxjs';
+import { Observable, from, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Product {
   id: number;
@@ -45,6 +46,10 @@ export class ProductService {
 
   getProducts(): Observable<Product[]> {
     return from(this.axiosInstance.get<Product[]>(`${this.apiUrl}/all`).then(response => response.data));
+  }
+
+  getProductById(id: number): Observable<Product> {
+    return from(this.axiosInstance.get<Product>(`${this.apiUrl}/${id}`).then(response => response.data));
   }
 
   createProduct(product: ProductRequest): Observable<Product> {

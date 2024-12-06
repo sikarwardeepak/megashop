@@ -12,7 +12,7 @@
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/products" routerLinkActive="active">Products</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/login" routerLinkActive="active">Login</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/register" routerLinkActive="active">Register</a></li>
-        <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/cart" routerLinkActive="active">Cart</a></li>
+        <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a [routerLink]="['/cart']" routerLinkActive="active">Cart</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/order-history" routerLinkActive="active">Order History</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a (click)="logout()" routerLinkActive="active">Logout</a></li>

@@ -33,13 +33,23 @@
           <img [src]="product.imageUrl" alt="{{ product.name }}" />
         </div>
         <div class="product-details">
-          <h3 class="product-title">{{ product.name }}</h3>
+          <h3 class="product-title">
+            <a [routerLink]="['/products', product.id]" target = "_blank">{{ product.name }}</a></h3>
           <p class="product-description">{{ product.description }}</p>
           <div class="product-meta">
             <span class="product-price">{{ product.price | currency }}</span>
             <span class="product-category">{{ product.category.name }}</span>
           </div>
-          <button (click)="addToCart(product)" class="add-to-bag">Add to Bag</button>
+          <div *ngIf="product.quantity > 0 && product.quantity < 5" class="low-stock">
+            Few items left
+          </div>
+          <button 
+            (click)="addToCart(product)" 
+            class="add-to-bag" 
+            [ngClass]="{'out-of-stock': product.quantity === 0}"
+            [disabled]="product.quantity === 0">
+            {{ product.quantity === 0 ? 'Out of Stock' : 'Add to Bag' }}
+          </button>
         </div>
       </div>
     </div>
