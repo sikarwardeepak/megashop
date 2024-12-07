@@ -1,1 +1,12 @@
-<p>checkout works!</p>
+<div class="checkout-container">
+    <h1>Checkout</h1>
+    <div class="order-summary">
+      <h2>Order Summary</h2>
+      <div *ngFor="let item of cartItems" class="order-item">
+        <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+      </div>
+      <p>Total: {{ totalAmount | currency }}</p>
+      <div id="card-element"></div>
+      <button (click)="checkout()" class="checkout-button">Proceed to Payment</button>
+    </div>
+  </div>

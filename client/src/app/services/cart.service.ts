@@ -103,6 +103,26 @@ export class CartService {
     }
   }
 
+  getTotalPrice(): number {
+    const cartItems = this.getCartItemsSnapshot();
+    return cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  }
+
+  getCartItems(): Observable<{ product: Product; quantity: number }[]> {
+    return this.addedToCart$.pipe(
+      map(items => items.map(item => {
+        const product = this.productService.getProductByPublicId(Number(item.publicId));
+        if (!product) {
+          throw new Error(`Product with ID ${item.publicId} not found`);
+        }
+        return {
+          product,
+          quantity: item.quantity
+        };
+      }))
+    );
+  }
+
   getCartItemsSnapshot(): { product: Product; quantity: number }[] {
     return this.addedToCart$.getValue().map(item => {
       const product = this.productService.getProductByPublicId(Number(item.publicId));

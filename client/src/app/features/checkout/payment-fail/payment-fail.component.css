@@ -1,0 +1,32 @@
+.payment-fail-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-fail-container h1 {
+    color: #dc3545;
+  }
+  
+  .payment-fail-container p {
+    font-size: 18px;
+    margin: 20px 0;
+  }
+  
+  .payment-fail-container a {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  
+  .payment-fail-container a:hover {
+    background-color: #0056b3;
+  }

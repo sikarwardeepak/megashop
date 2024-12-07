@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Observable, from } from 'rxjs';
 
 export interface Order {
@@ -15,14 +15,34 @@ export interface Order {
 })
 export class OrderService {
   private apiUrl = 'http://localhost:8081/api/orders';
+  private axiosInstance: AxiosInstance;
 
-  constructor() {}
+  constructor() {
+    this.axiosInstance = axios.create();
+
+    this.axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+          config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  createOrder(order: any): Observable<Order> {
+    return from(this.axiosInstance.post<Order>(`${this.apiUrl}`, order).then((response: AxiosResponse<Order>) => response.data));
+  }
 
   getOrders(): Observable<Order[]> {
-    return from(axios.get<Order[]>(`${this.apiUrl}/all`).then(response => response.data));
+    return from(this.axiosInstance.get<Order[]>(`${this.apiUrl}/all`).then((response: AxiosResponse<Order[]>) => response.data));
   }
 
   updateOrderStatus(id: number, status: string): Observable<Order> {
-    return from(axios.put<Order>(`${this.apiUrl}/${id}`, { status }).then(response => response.data));
+    return from(this.axiosInstance.put<Order>(`${this.apiUrl}/${id}`, { status }).then((response: AxiosResponse<Order>) => response.data));
   }
 }

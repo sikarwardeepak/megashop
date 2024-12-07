@@ -4,10 +4,11 @@ import { CartService } from '../../services/cart.service';
 import { Product, ProductService } from '../../services/product.service';
 import { CartItemAdd } from '../../models/cart.model';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule, CurrencyPipe],
+  imports: [CommonModule, RouterModule, CurrencyPipe],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
@@ -15,7 +16,10 @@ export class CartComponent implements OnInit, OnDestroy {
   cartItems: CartItemAdd[] = [];
   private cartSubscription!: Subscription;
 
-  constructor(private cartService: CartService, private productService: ProductService) { }
+  constructor(
+    private cartService: CartService, 
+    private productService: ProductService,
+    private router: Router) { }
 
   ngOnInit(): void {
     // Subscribe to cart items observable
@@ -58,5 +62,9 @@ export class CartComponent implements OnInit, OnDestroy {
   getProductByPublicId(publicId: string): Product | undefined {
     const productId = Number(publicId);
     return this.productService.getProductByPublicId(productId);
+  }
+
+  navigateToCheckout(): void {
+    this.router.navigate(['/checkout']);
   }
 }

@@ -12,6 +12,9 @@ import { AuthGuard } from './core/auth/auth.guard'; // Import your AuthGuard
 import { OrderManagementComponent } from './features/admin/order-management/order-management.component';
 import { CategoryManagementComponent } from './features/admin/category-management/category-management.component';
 import { ProductManagementComponent } from './features/admin/product-management/product-management.component';
+import { PaymentSuccessComponent } from './features/checkout/payment-success/payment-success.component';
+import { PaymentFailComponent } from './features/checkout/payment-fail/payment-fail.component';
+import { PaymentGuard } from './core/guards/payment.guard';
 
 export const routes: Routes = [
   // { path: '', component: HomeComponent },
@@ -19,6 +22,8 @@ export const routes: Routes = [
   { path: 'products/:id', component: ProductDetailComponent },
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent },
+  { path: 'payment-success', component: PaymentSuccessComponent, canActivate: [PaymentGuard] },
+  { path: 'payment-fail', component: PaymentFailComponent, canActivate: [PaymentGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {

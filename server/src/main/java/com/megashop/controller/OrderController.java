@@ -4,12 +4,17 @@ import com.megashop.entity.Order;
 import com.megashop.entity.User;
 import com.megashop.service.OrderService;
 import com.megashop.service.UserService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -41,5 +46,26 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public Order updateOrderStatus(@PathVariable Long id, @RequestBody Order order) {
         return orderService.updateOrderStatus(id, order.getStatus());
+    }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()")
+    public Order createOrder(@RequestBody Map<String, Object> orderData, Authentication authentication) throws StripeException {
+        String paymentIntentId = (String) orderData.get("paymentIntentId");
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+
+        if (!"succeeded".equals(paymentIntent.getStatus())) {
+            throw new IllegalArgumentException("Payment not successful. Cannot create order.");
+        }
+        String username = authentication.getName();
+        User user = userService.findByUsername(username);
+
+        Order order = new Order();
+        order.setUser(user);
+        order.setTotalAmount(((Number) orderData.get("totalAmount")).doubleValue()); // Convert to Double
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus((String) orderData.get("status"));
+        order.setPaymentSuccessful((Boolean) orderData.get("paymentSuccessful"));
+        return orderService.saveOrder(order);
     }
 }
