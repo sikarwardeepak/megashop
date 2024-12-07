@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService, Product } from '../../../services/product.service';
+import { CartService } from '../../../services/cart.service';
 import { CategoryService, Category } from '../../../services/category.service';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -28,6 +29,7 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private cartService: CartService,
     private categoryService: CategoryService,
     private router: Router,
     private route: ActivatedRoute
@@ -44,17 +46,29 @@ export class ProductListComponent implements OnInit {
       this.applyFilters();
     });
     this.loadCategories();
+    this.loadProducts();
   }
 
   loadProducts(): void {
     this.productService.getProducts().subscribe((data: Product[]) => {
       this.products = data;
+      this.updateProductQuantitiesFromCart();
     });
   }
 
   loadCategories(): void {
     this.categoryService.getCategories().subscribe((data: Category[]) => {
       this.categories = data;
+    });
+  }
+
+  updateProductQuantitiesFromCart(): void {
+    const cartItems = this.cartService.getCartItemsSnapshot();
+    this.products.forEach(product => {
+      const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === product.id);
+      if (cartItem) {
+        product.quantity -= cartItem.quantity;
+      }
     });
   }
 
@@ -101,6 +115,7 @@ export class ProductListComponent implements OnInit {
 
     this.productService.getProductsByFilters(params).subscribe((data) => {
       this.products = data;
+      this.updateProductQuantitiesFromCart();
     });
 
     this.updateUrl();
@@ -122,6 +137,17 @@ export class ProductListComponent implements OnInit {
   }
 
   addToCart(product: Product): void {
-    console.log('Product added to cart:', product);
+    if (product.quantity > 0) {
+      this.cartService.addToCart(product.id.toString(), 'add');
+      product.quantity--;
+      console.log('Product added to cart:', product);
+    } else {
+      alert('Product is out of stock.');
+    }
+  }
+
+  getProductByPublicId(publicId: Number): Product | undefined {
+    const productId = Number(publicId);
+    return this.productService.getProductByPublicId(productId);
   }
 }

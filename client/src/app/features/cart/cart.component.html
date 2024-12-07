@@ -1,0 +1,46 @@
+<div class="cart-container">
+  <h1>Your Cart</h1>
+  <div class="cart-content">
+    <div class="cart-items" *ngIf="cartItems.length > 0; else emptyCart">
+      <div class="cart-item" *ngFor="let item of cartItems">
+        <div class="cart-item-image">
+          <!-- <ng-container *ngIf="getProductByPublicId(item.publicId) as product">
+            <img [src]="product.imageUrl" alt="{{ product.name }}" />
+          </ng-container> -->
+        </div>
+        <div class="cart-item-details">
+          <ng-container *ngIf="getProductByPublicId(item.publicId) as product">
+            <!-- <div class="cart-item-image">
+              <img [src]="product.imageUrl" alt="{{ product.name }}" />
+            </div> -->
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">{{ product.price | currency }}</p>
+            <p class="product-quantity" *ngIf="product.quantity > 0 && product.quantity < 5">
+              Only {{ product.quantity }} more left
+            </p>
+            <p class="product-quantity" *ngIf="product.quantity == 0">
+              Max quantity reached
+            </p>
+          </ng-container>
+          <div class="cart-item-meta">
+            <div class="cart-item-quantity">
+              <button (click)="decreaseQuantity(item.publicId)" class="quantity-button">-</button>
+              <span class="quantity-display">{{ item.quantity }}</span>
+              <button (click)="increaseQuantity(item.publicId)" class="quantity-button">+</button>
+            </div>
+            <button (click)="removeFromCart(item.publicId)" class="remove-button">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cart-summary">
+      <h2>Order Summary</h2>
+      <p>Total Items: {{ getTotalItems() }}</p>
+      <p>Total Price: {{ getTotalPrice() | currency }}</p>
+      <button class="checkout-button">Checkout</button>
+    </div>
+    <ng-template #emptyCart>
+      <p>Your cart is empty.</p>
+    </ng-template>
+  </div>
+</div>

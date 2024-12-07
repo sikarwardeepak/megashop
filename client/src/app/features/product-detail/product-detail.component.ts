@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService, Product } from '../../services/product.service';
+import { CartService } from '../../services/cart.service';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 
 @Component({
@@ -18,6 +19,7 @@ export class ProductDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private productService: ProductService,
+    private cartService: CartService
   ) { }
 
   ngOnInit(): void {
@@ -38,6 +40,7 @@ export class ProductDetailComponent implements OnInit {
     this.productService.getProductById(productId).subscribe(
       (product) => {
         this.product = product;
+        this.updateProductQuantityFromCart();
         this.isLoading = false;
       },
       (error) => {
@@ -45,5 +48,26 @@ export class ProductDetailComponent implements OnInit {
         this.isLoading = false;
       }
     );
+  }
+
+  updateProductQuantityFromCart(): void {
+    if (this.product) {
+      const cartItems = this.cartService.getCartItemsSnapshot();
+      const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === this.product!.id);
+      if (cartItem) {
+        this.product.quantity -= cartItem.quantity;
+      }
+    }
+  }
+
+  addToCart(): void {
+    if (this.product && this.product.quantity > 0) {
+      this.cartService.addToCart(this.product.id.toString(), 'add');
+      this.productService.updateProductQuantity(this.product.id, -1);
+      this.product.quantity -= 1; // Update local quantity
+      console.log('Product added to cart:', this.product);
+    } else {
+      alert('Product is out of stock.');
+    }
   }
 }
