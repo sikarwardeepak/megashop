@@ -1,19 +1,45 @@
-<h2>Order Management</h2>
-<table>
-  <tr>
-    <th>Order ID</th>
-    <th>User</th>
-    <th>Total Amount</th>
-    <th>Status</th>
-  </tr>
-  <tr *ngFor="let order of orders">
-    <td>{{ order.id }}</td>
-    <td>{{ order.user.username }}</td>
-    <td>{{ order.totalAmount | currency }}</td>
-    <td>
-      <select [(ngModel)]="order.status" (change)="updateStatus(order)">
-        <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
-      </select>
-    </td>
-  </tr>
-</table>
+<div class="order-management-container">
+  <h1>Order Management</h1>
+  <table class="order-list">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>User</th>
+        <th>Total Amount</th>
+        <th>Status</th>
+        <th>Order Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let order of orders">
+        <td>{{ order.id }}</td>
+        <td>{{ order.user.username }}</td>
+        <td>{{ order.totalAmount | currency }}</td>
+        <td>
+          <select [(ngModel)]="order.status">
+            <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+          </select>
+        </td>
+        <td>{{ order.orderDate | date: 'short' }}</td>
+        <td>
+          <button (click)="resetStatus(order)">Reset</button>
+          <button (click)="updateStatus(order)">Apply</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="selectedOrder" class="order-details">
+    <h2>Order Details</h2>
+    <p><strong>Order ID:</strong> {{ selectedOrder.id }}</p>
+    <p><strong>User:</strong> {{ selectedOrder.user.username }}</p>
+    <p><strong>Total Amount:</strong> {{ selectedOrder.totalAmount | currency }}</p>
+    <p><strong>Status:</strong> {{ selectedOrder.status }}</p>
+    <p><strong>Order Date:</strong> {{ selectedOrder.orderDate | date: 'short' }}</p>
+    <!-- <div *ngFor="let item of selectedOrder.items" class="order-item">
+      <p><strong>Product:</strong> {{ item.product.name }}</p>
+      <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+      <p><strong>Price:</strong> {{ item.product.price | currency }}</p>
+    </div> -->
+  </div>
+</div>

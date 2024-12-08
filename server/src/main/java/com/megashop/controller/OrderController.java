@@ -64,6 +64,8 @@ public class OrderController {
         order.setUser(user);
         order.setTotalAmount(((Number) orderData.get("totalAmount")).doubleValue()); // Convert to Double
         order.setOrderDate(LocalDateTime.now());
+        order.setAddress(orderData.get("address").toString());
+        order.setEmail(orderData.get("email").toString());
         order.setStatus((String) orderData.get("status"));
         order.setPaymentSuccessful((Boolean) orderData.get("paymentSuccessful"));
         return orderService.saveOrder(order);

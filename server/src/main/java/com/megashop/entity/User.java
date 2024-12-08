@@ -17,6 +17,12 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = true)
+    private String email; 
+
+    @Column(nullable = true)
+    private String address; 
+
     public String getRole() {
         return role;
     }
@@ -31,6 +37,22 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String address) {
+        this.email = address;
     }
 
     public String getUsername() {

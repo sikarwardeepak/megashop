@@ -57,6 +57,13 @@
     font-size: 18px;
     margin-top: 20px;
   }
+
+  .map-container {
+    height: 400px; /* Adjust as needed */
+    width: 100%;
+    margin-top: 20px; /* Optional: adds space above the map */
+    border: 1px solid #ccc; /* Optional: adds a border for visibility */
+  }
   
   .checkout-button:hover {
     background-color: #218838;

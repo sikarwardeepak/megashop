@@ -1,12 +1,79 @@
 <div class="checkout-container">
     <h1>Checkout</h1>
-    <div class="order-summary">
-      <h2>Order Summary</h2>
-      <div *ngFor="let item of cartItems" class="order-item">
-        <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+    <form [formGroup]="checkoutForm" (ngSubmit)="checkout()">
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div *ngFor="let item of cartItems" class="order-item">
+          <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+        </div>
+        <p>Total: {{ totalAmount | currency }}</p>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Enter your email"
+            required
+          />
+          <div
+            *ngIf="
+              checkoutForm.get('email')?.invalid &&
+              (checkoutForm.get('email')?.dirty || checkoutForm.get('email')?.touched)
+            "
+            class="text-danger"
+          >
+            A valid email is required.
+          </div>
+        </div>
+
+        <!-- Address Field -->
+        <div class="form-group">
+          <label for="address">Shipping Address:</label>
+          <input
+            id="address"
+            type="text"
+            formControlName="address"
+            class="form-control"
+            placeholder="Enter your address"
+            #addressInput
+            required
+          />
+          <div
+            *ngIf="
+              checkoutForm.get('address')?.invalid &&
+              (checkoutForm.get('address')?.dirty || checkoutForm.get('address')?.touched)
+            "
+            class="text-danger"
+          >
+            Address is required.
+          </div>
+        </div>
+
+        <!-- Google Places Autocomplete Prompt -->
+        <div *ngIf="!checkoutForm.get('address')?.value">
+          <p>Please search and select your address from Google Maps below.</p>
+          <!-- <div #map id="map" class="map-container"></div> -->
+        </div>
+
+            <google-map
+          height="450px"
+          width="100%"
+          [center]="currentLocation  || { lat: 0, lng: 0 }"
+          [zoom]="15"
+        >
+          <map-marker
+            *ngIf="markerPosition"
+            [position]="markerPosition"
+            draggable="true"
+          ></map-marker>
+        </google-map>
+        <!-- Payment Form -->
+        <div id="card-element" class="mt-4" ></div>
+        <button type="submit" class="checkout-button btn btn-primary mt-3" [disabled]="checkoutForm.invalid">Proceed to Payment</button>
       </div>
-      <p>Total: {{ totalAmount | currency }}</p>
-      <div id="card-element"></div>
-      <button (click)="checkout()" class="checkout-button">Proceed to Payment</button>
-    </div>
+    </form>
   </div>

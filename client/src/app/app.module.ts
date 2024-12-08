@@ -21,6 +21,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CategoryManagementComponent } from './features/admin/category-management/category-management.component';
 import { OrderManagementComponent } from './features/admin/order-management/order-management.component';
+import { GoogleMapsModule } from '@angular/google-maps';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { OrderManagementComponent } from './features/admin/order-management/orde
     CoreModule,
     ReactiveFormsModule,
     HttpClientModule,
+    GoogleMapsModule,
     NavbarComponent,
     HomeComponent,
     AboutComponent,

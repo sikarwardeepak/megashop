@@ -8,10 +8,12 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-order-management',
   imports: [CommonModule, CurrencyPipe, FormsModule],
   templateUrl: './order-management.component.html',
+  styleUrl: './order-management.component.css'
 })
 export class OrderManagementComponent implements OnInit {
   orders: Order[] = [];
   statuses = ['Pending', 'Processing', 'Completed', 'Cancelled'];
+  selectedOrder: Order | null = null;
 
   constructor(private orderService: OrderService) {}
 
@@ -20,7 +22,26 @@ export class OrderManagementComponent implements OnInit {
   }
 
   loadOrders(): void {
-    this.orderService.getOrders().subscribe((data) => (this.orders = data));
+    this.orderService.getOrders().subscribe(
+      (orders: Order[]) => {
+        this.orders = orders;
+      },
+      (error: any) => {
+        console.error('Error loading orders:', error);
+      }
+    );
+  }
+
+  resetStatus(order: Order): void {
+    // Reset the order status to its original value
+    const originalOrder = this.orders.find(o => o.id === order.id);
+    if (originalOrder) {
+      order.status = originalOrder.status;
+    }
+  }
+
+  selectOrder(order: Order): void {
+    this.selectedOrder = order;
   }
 
   updateStatus(order: Order): void {

@@ -33,6 +33,26 @@ export class AuthService {
     }
   }
 
+  async changePassword(currentPassword: string, newPassword: string): Promise<any> {
+    const payload = {
+      currentPassword: currentPassword,
+      newPassword: newPassword
+    };
+    try {
+      const token = this.getToken();
+      const headers: { [key: string]: string } = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      const response = await axios.post(`${this.apiUrl}/changePassword`, payload, {
+        headers: headers
+      });
+      return response.data; // Return response data
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // Register method
   async register(user: { username: string; password: string }): Promise<any> {
     try {

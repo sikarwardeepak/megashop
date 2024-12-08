@@ -4,10 +4,14 @@ import { Observable, from } from 'rxjs';
 
 export interface Order {
   id: number;
-  user: any;
+  email: string;
   totalAmount: number;
-  orderDate: string;
+  orderDate: Date;
   status: string;
+  items: any[]; // Replace 'any' with your actual item type/interface
+  paymentSuccessful: boolean;
+  paymentIntentId: string;
+  address: string;
 }
 
 @Injectable({
@@ -40,6 +44,14 @@ export class OrderService {
 
   getOrders(): Observable<Order[]> {
     return from(this.axiosInstance.get<Order[]>(`${this.apiUrl}/all`).then((response: AxiosResponse<Order[]>) => response.data));
+  }
+
+  getOrderHistory(): Observable<Order[]> {
+    return from(
+      this.axiosInstance
+        .get<Order[]>(`${this.apiUrl}/history`)
+        .then((response: AxiosResponse<Order[]>) => response.data)
+    );
   }
 
   updateOrderStatus(id: number, status: string): Observable<Order> {

@@ -1,11 +1,18 @@
 package com.megashop.controller;
 
+import com.megashop.dto.ChangePasswordRequest;
 import com.megashop.entity.User;
+import com.megashop.exception.InvalidCurrentPasswordException;
 import com.megashop.service.UserService;
 import com.megashop.util.JwtUtil;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,4 +49,21 @@ public class UserController {
     public User getUserByUsername(@PathVariable String username) {
         return userService.findByUsername(username);
     }
+
+    @PostMapping("/changePassword")
+public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    try {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        userService.changePassword(
+            currentUsername,
+            changePasswordRequest.getCurrentPassword(),
+            changePasswordRequest.getNewPassword()
+        );
+        return ResponseEntity.ok("Password updated successfully.");
+    } catch (InvalidCurrentPasswordException e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+    }
+}
 }
