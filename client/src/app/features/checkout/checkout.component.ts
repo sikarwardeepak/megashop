@@ -1,7 +1,10 @@
 import { Component, OnInit, ElementRef, ViewChild, NgZone } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { OrderService, Order } from '../../services/order.service';
+import { UserService} from '../../services/user.service';
+import { User } from '../../models/user.model';
 import { StripeService } from '../../services/stripe.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
@@ -10,7 +13,7 @@ import { StripeElementsOptions, StripeCardElementOptions, StripeCardElement } fr
 import { PaymentGuard } from '../../core/guards/payment.guard';
 import { OrderDTO } from '../../models/order-dto.model';
 import { environment } from '../../../environments/environment';
-import { GoogleMapsModule } from '@angular/google-maps';
+import { GoogleMap, GoogleMapsModule } from '@angular/google-maps';
 // declare var google: any;
 
 @Component({
@@ -29,18 +32,24 @@ export class CheckoutComponent implements OnInit {
   isMapsLoaded: boolean = false;
   mapsLoadError: boolean = false;
 
+  @ViewChild(GoogleMap, { static: false }) googleMap!: GoogleMap;
   @ViewChild('addressInput', { static: false }) addressInput!: ElementRef<HTMLInputElement>;
-
   @ViewChild('map', { static: false }) mapElement!: ElementRef;
+  
   map: google.maps.Map | undefined;
-  marker: google.maps.Marker | undefined;
   currentLocation: google.maps.LatLngLiteral = { lat: 37.7749, lng: -122.4194 };
-  markerPosition: { lat: number; lng: number } | undefined;
+  mapOptions: google.maps.MapOptions = {
+    center: this.currentLocation,
+    zoom: 12,
+  };
+  advancedMarker: google.maps.marker.AdvancedMarkerElement | null = null;
   
   constructor(
     private cartService: CartService,
     private orderService: OrderService,
     private stripeService: StripeService,
+    private userService: UserService,
+    private authService: AuthService,
     private router: Router,
     private fb: FormBuilder,
     private ngZone: NgZone,
@@ -58,6 +67,9 @@ export class CheckoutComponent implements OnInit {
       this.cartItems = items;
       this.totalAmount = this.cartService.getTotalPrice();
     });
+    if (this.authService.isAuthenticated()) {
+      this.prefillUserAddress();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -79,7 +91,49 @@ export class CheckoutComponent implements OnInit {
     console.log('Stripe Element mounted successfully.');
   }
 
+  prefillUserAddress(): void {
+    this.userService.getUserProfile().subscribe((user: User | null) => {
+      if (user) {
+        this.checkoutForm.patchValue({
+          email: user.email || '',
+          address: user.address || ''
+        });
+      }
+    });
+    
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          this.currentLocation = { lat, lng };
+          this.updateAdvancedMarker(lat, lng);
+          this.updateAddress(lat, lng);
+        },
+        error => {
+          console.warn('Geolocation is not available or permission denied.', error);
+        }
+      );
+    } else {
+      console.warn('Geolocation is not supported by this browser.');
+    }
+  }
+
   initAutocomplete() {
+    const map = this.googleMap.googleMap;
+  
+    if (!map) {
+      console.error('Google Map instance is not available.');
+      return;
+    }
+
+    // Optional: Set additional map options if needed
+    map.setOptions({
+      mapId: '587cbd2e1f1d1b41', // Ensure this matches the Map ID in index.html
+    });
+
+    this.updateAdvancedMarker(this.currentLocation.lat, this.currentLocation.lng);
+
     if (!this.addressInput) {
       console.error('Address input element not found.');
       return;
@@ -114,7 +168,7 @@ export class CheckoutComponent implements OnInit {
           const lat = place.geometry.location.lat();
           const lng = place.geometry.location.lng();
           this.currentLocation = { lat, lng };
-          this.markerPosition = { lat, lng };
+          this.updateAdvancedMarker(lat, lng);
           console.log('Map center updated:', this.currentLocation);
         }
       });
@@ -127,17 +181,109 @@ export class CheckoutComponent implements OnInit {
    * Updates the address field based on the new marker position.
    */
 
-  onMarkerDragEnd(event: google.maps.MapMouseEvent) {
-    if (event.latLng) {
-      const lat = event.latLng.lat();
-      const lng = event.latLng.lng();
-      this.currentLocation = { lat: 37.7749, lng: -122.4194 };
-      this.markerPosition = { lat, lng };
-      console.log('Marker dragged to:', this.currentLocation);
+  updateAdvancedMarker(lat: number, lng: number): void {
+    const map = this.googleMap.googleMap; // Access the underlying google.maps.Map instance
+
+    if (!map) {
+      console.error('Google Map instance is not available.');
+      return;
+    }
+
+    // Remove existing marker if any
+    if (this.advancedMarker) {
+      this.advancedMarker.map = null;
+    }
+
+    // Create a new AdvancedMarkerElement
+    this.advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+      position: new google.maps.LatLng(lat, lng),
+      map: map,
+      gmpDraggable: true,
+      title: 'Drag me!',
+      
+      // Additional customization options can be added here
+    });
+
+    // Add event listener for drag end
+    this.advancedMarker.addListener('dragend', (event: google.maps.MapMouseEvent) => {
+      const newPosition = this.advancedMarker!.position;
+      if (newPosition) {
+        const updatedLat = typeof newPosition.lat === 'function' ? newPosition.lat() : newPosition.lat;
+        const updatedLng = typeof newPosition.lng === 'function' ? newPosition.lng() : newPosition.lng;
+        this.currentLocation = { lat: updatedLat, lng: updatedLng };
+        console.log('AdvancedMarker dragged to:', this.currentLocation);
+        this.updateAddress(updatedLat, updatedLng);
+      }
+    });
+  }
+
+  moveMarkerToCenter(): void {
+    const map = this.googleMap.googleMap;
+
+    if (!map) {
+      console.error('Google Map instance is not available.');
+      return;
+    }
+
+    const center = map.getCenter();
+    if (center) {
+      const lat = center.lat();
+      const lng = center.lng();
+      console.log('Moving marker to map center:', { lat, lng });
+      this.updateAdvancedMarker(lat, lng);
       this.updateAddress(lat, lng);
     }
   }
 
+  useSavedAddress(): void {
+    this.userService.getUserProfile().subscribe(
+      (user: User | null) => {
+        if (user && user.address) {
+          this.checkoutForm.patchValue({ address: user.address });
+
+          // Geocode the saved address to get latitude and longitude
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ address: user.address }, (results, status) => {
+            if (status === 'OK' && results && results[0].geometry) {
+              const location = results[0].geometry.location;
+              this.currentLocation = { lat: location.lat(), lng: location.lng() };
+              this.updateAdvancedMarker(this.currentLocation.lat, this.currentLocation.lng);
+            } else {
+              console.error('Geocoding failed:', status);
+            }
+          });
+        } else {
+          console.warn('No saved address found for the user.');
+        }
+      },
+      (error) => {
+        console.error('Error fetching user profile:', error);
+      }
+    );
+  }
+
+  /**
+   * Uses the browser's geolocation to set the current location, update the map marker, and fill the address field.
+   */
+  useCurrentLocation(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          this.currentLocation = { lat, lng };
+          this.updateAdvancedMarker(lat, lng);
+          this.updateAddress(lat, lng);
+        },
+        (error) => {
+          console.warn('Geolocation failed:', error);
+        }
+      );
+    } else {
+      console.warn('Geolocation is not supported by this browser.');
+    }
+  }
+  
   /**
    * Reverse geocodes the provided latitude and longitude to get the formatted address.
    * @param lat Latitude

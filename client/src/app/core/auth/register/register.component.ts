@@ -13,7 +13,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
+  currentStep: number = 1;
   errorMessage: string = '';
+  loading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -23,7 +25,9 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      email: ['', [Validators.email]],
+      address: ['']
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -36,16 +40,41 @@ export class RegisterComponent {
     return null;
   }
 
+  nextStep(): void {
+    this.currentStep = 2;
+  }
+
+  previousStep(): void {
+    this.currentStep = 1;
+  }
+
   async onSubmit() {
     if (this.registerForm.valid) {
+      this.loading = true;
       const user = this.registerForm.value;
       try {
+        // Convert Observable to Promise for async/await
         const response = await this.authService.register(user);
-        this.authService.saveToken(response.token); // Save token after registration
+        // Handle successful registration
+        // this.toastService.showSuccess('Registration successful! Please log in.');
+        this.errorMessage = '';
         this.router.navigate(['/login']);
-      } catch (error) {
-        this.errorMessage = (error as any).error.message;
+      } catch (error: any) {
+        // Assign error message based on error response
+        if (error.status === 500) {
+          this.errorMessage = 'Internal server error. Please try again later.';
+        }
+        else if (error && error.message) {
+          this.errorMessage = error.error.message;
+        } else {
+          this.errorMessage = 'An unexpected error occurred. Please try again.';
+        }
+        console.error('Registration Error:', error);
+      } finally {
+        this.loading = false;
       }
+    } else {
+      this.registerForm.markAllAsTouched();
     }
   }
 }

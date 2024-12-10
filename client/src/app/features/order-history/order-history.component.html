@@ -3,6 +3,7 @@
     <table class="order-list">
       <thead>
         <tr>
+          <th>Select</th>
           <th>Order ID</th>
           <th>Total Amount</th>
           <th>Status</th>
@@ -11,7 +12,13 @@
       </thead>
       <tbody>
         <ng-container *ngIf="orders && orders.length > 0; else noData">
-          <tr *ngFor="let order of orders">
+          <tr *ngFor="let order of orders" (click)="onRowClick(order)"
+          [class.selected]="selectedOrder?.id === order.id">
+          <td>
+            <input type="radio" name="selectedOrder" [value]="order.id"
+                   (change)="onRowClick(order)"
+                   [checked]="selectedOrder?.id === order.id">
+          </td>
             <td>{{ order.id }}</td>
             <td>{{ order.totalAmount | currency }}</td>
             <td>{{ order.status }}</td>
@@ -25,4 +32,10 @@
         </ng-template>
       </tbody>
     </table>
+
+    <div *ngIf="selectedOrder" class="order-details">
+      <h3>Order Details</h3>
+      <p><strong>Email:</strong> {{ selectedOrder.email }}</p>
+      <p><strong>Address:</strong> {{ selectedOrder.address }}</p>
+    </div>
   </div>

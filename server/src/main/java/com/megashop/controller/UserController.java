@@ -51,19 +51,48 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
-    try {
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String currentUsername = authentication.getName();
+
+            userService.changePassword(
+                currentUsername,
+                changePasswordRequest.getCurrentPassword(),
+                changePasswordRequest.getNewPassword()
+            );
+            return ResponseEntity.ok("Password updated successfully.");
+        } catch (InvalidCurrentPasswordException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    // New endpoint to get user profile
+    @GetMapping("/profile")
+    public ResponseEntity<User> getProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
-
-        userService.changePassword(
-            currentUsername,
-            changePasswordRequest.getCurrentPassword(),
-            changePasswordRequest.getNewPassword()
-        );
-        return ResponseEntity.ok("Password updated successfully.");
-    } catch (InvalidCurrentPasswordException e) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        User user = userService.findByUsername(currentUsername);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
-}
+
+    // New endpoint to update user profile
+    @PutMapping("/profile")
+    public ResponseEntity<User> updateProfile(@RequestBody User updatedUser) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        User user = userService.findByUsername(currentUsername);
+        if (user != null) {
+            user.setEmail(updatedUser.getEmail());
+            user.setAddress(updatedUser.getAddress());
+            userService.saveUser(user);
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 }

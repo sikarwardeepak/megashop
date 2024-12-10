@@ -2,6 +2,8 @@
   <div class="register-box">
     <h1 class="register-title">Create account</h1>
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <!-- Step 1: Username and Password -->
+    <div class="form-step" [hidden]="currentStep !== 1">
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" formControlName="username" class="form-control" />
@@ -25,12 +27,32 @@
         <div *ngIf="registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched" class="error">
           Passwords do not match.
         </div>
+        <button type="button" class="btn btn-secondary" (click)="nextStep()">Next (Optional)</button>
       </div>
+      </div>
+
+      <!-- Step 2: Email and Address (Optional) -->
+      <div class="form-group optional-step" [hidden]="currentStep !== 2">
+        <h2>Additional Information (Optional)</h2>
+        
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" class="form-control" />
+        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error">
+          Please enter a valid email.
+        </div>
+
+        <label for="address">Address</label>
+        <input type="text" id="address" formControlName="address" class="form-control" />
+        <div *ngIf="registerForm.get('address')?.invalid && registerForm.get('address')?.touched" class="error">
+          Please enter your address.
+        </div>
+        <button type="button" class="btn btn-secondary" (click)="previousStep()">Back</button>
+      </div>
+
       <button type="submit" class="register-button" [disabled]="registerForm.invalid">Create your account</button>
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
     </form>
     <div class="login-link">
       <a routerLink="/login">Already have an account? Sign in</a>
-    </div>
   </div>
 </div>

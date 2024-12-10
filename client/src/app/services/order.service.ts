@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Observable, from } from 'rxjs';
+import { User } from '../models/user.model';
 
 export interface Order {
   id: number;
@@ -9,6 +10,7 @@ export interface Order {
   orderDate: Date;
   status: string;
   items: any[]; // Replace 'any' with your actual item type/interface
+  user: User;
   paymentSuccessful: boolean;
   paymentIntentId: string;
   address: string;

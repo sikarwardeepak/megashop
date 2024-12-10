@@ -22,6 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { CategoryManagementComponent } from './features/admin/category-management/category-management.component';
 import { OrderManagementComponent } from './features/admin/order-management/order-management.component';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { SettingsComponent } from './features/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { GoogleMapsModule } from '@angular/google-maps';
     RegisterComponent,
     CategoryManagementComponent,
     OrderManagementComponent,
-    ProductDetailComponent
+    ProductDetailComponent,
+    SettingsComponent
   ],
   providers: [],
   // No need to bootstrap AppComponent here, since it's handled in main.ts

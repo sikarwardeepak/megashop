@@ -4,6 +4,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,11 +15,13 @@ import { FormsModule } from '@angular/forms';
 export class NavbarComponent implements OnInit {
   isLoggedIn = false;
   searchQuery: string = '';
+  totalCartQuantity: number = 0;
 
   constructor(
     public authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
+    private cartService: CartService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -27,6 +30,9 @@ export class NavbarComponent implements OnInit {
     // this.route.queryParams.subscribe(params => {
     //   this.searchQuery = params['name'] || '';
     // });
+    this.cartService.getCartItems().subscribe(items => {
+      this.totalCartQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
+    });
   }
 
   checkLoginStatus(): void {

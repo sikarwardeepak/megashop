@@ -1,13 +1,7 @@
 <div class="checkout-container">
     <h1>Checkout</h1>
     <form [formGroup]="checkoutForm" (ngSubmit)="checkout()">
-      <div class="order-summary">
-        <h2>Order Summary</h2>
-        <div *ngFor="let item of cartItems" class="order-item">
-          <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
-        </div>
-        <p>Total: {{ totalAmount | currency }}</p>
-
+      <div class="checkout-form">
         <!-- Email Field -->
         <div class="form-group">
           <label for="email">Email:</label>
@@ -59,21 +53,36 @@
           <!-- <div #map id="map" class="map-container"></div> -->
         </div>
 
+        <div class="map-controls">
+          <button type="button" class="move-marker-button btn btn-secondary" (click)="moveMarkerToCenter()">
+            Move Marker to Center
+          </button>
+          <button type="button" class="use-saved-address btn btn-primary" (click)="useSavedAddress()">
+            Use Saved Address
+          </button>
+          <button type="button" class="use-current-location btn btn-success" (click)="useCurrentLocation()">
+            Use Current Location
+          </button>
+        </div>
+
             <google-map
           height="450px"
           width="100%"
-          [center]="currentLocation  || { lat: 0, lng: 0 }"
-          [zoom]="15"
+          [center]="currentLocation"
+          [zoom]="mapOptions.zoom ?? 12"
+          
         >
-          <map-marker
-            *ngIf="markerPosition"
-            [position]="markerPosition"
-            draggable="true"
-          ></map-marker>
         </google-map>
         <!-- Payment Form -->
         <div id="card-element" class="mt-4" ></div>
         <button type="submit" class="checkout-button btn btn-primary mt-3" [disabled]="checkoutForm.invalid">Proceed to Payment</button>
+      </div>
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div *ngFor="let item of cartItems" class="order-item">
+          <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+        </div>
+        <p class="total-amount"><strong>Total:</strong> {{ totalAmount | currency }}</p>
       </div>
     </form>
   </div>
