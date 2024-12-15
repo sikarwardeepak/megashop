@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../services/cart.service';
+import { CartItem } from '../../models/cart.model';
 
 @Component({
   selector: 'app-navbar',
@@ -30,8 +31,9 @@ export class NavbarComponent implements OnInit {
     // this.route.queryParams.subscribe(params => {
     //   this.searchQuery = params['name'] || '';
     // });
-    this.cartService.getCartItems().subscribe(items => {
+    this.cartService.addedToCart$.subscribe((items: CartItem[]) => {
       this.totalCartQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
+      this.cdr.detectChanges(); // Trigger change detection to update the view
     });
   }
 

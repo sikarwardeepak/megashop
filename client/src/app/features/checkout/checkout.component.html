@@ -1,88 +1,136 @@
 <div class="checkout-container">
-    <h1>Checkout</h1>
-    <form [formGroup]="checkoutForm" (ngSubmit)="checkout()">
-      <div class="checkout-form">
-        <!-- Email Field -->
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            class="form-control"
-            placeholder="Enter your email"
-            required
-          />
-          <div
-            *ngIf="
-              checkoutForm.get('email')?.invalid &&
-              (checkoutForm.get('email')?.dirty || checkoutForm.get('email')?.touched)
-            "
-            class="text-danger"
-          >
-            A valid email is required.
-          </div>
-        </div>
-
-        <!-- Address Field -->
-        <div class="form-group">
-          <label for="address">Shipping Address:</label>
-          <input
-            id="address"
-            type="text"
-            formControlName="address"
-            class="form-control"
-            placeholder="Enter your address"
-            #addressInput
-            required
-          />
-          <div
-            *ngIf="
-              checkoutForm.get('address')?.invalid &&
-              (checkoutForm.get('address')?.dirty || checkoutForm.get('address')?.touched)
-            "
-            class="text-danger"
-          >
-            Address is required.
-          </div>
-        </div>
-
-        <!-- Google Places Autocomplete Prompt -->
-        <div *ngIf="!checkoutForm.get('address')?.value">
-          <p>Please search and select your address from Google Maps below.</p>
-          <!-- <div #map id="map" class="map-container"></div> -->
-        </div>
-
-        <div class="map-controls">
-          <button type="button" class="move-marker-button btn btn-secondary" (click)="moveMarkerToCenter()">
-            Move Marker to Center
-          </button>
-          <button type="button" class="use-saved-address btn btn-primary" (click)="useSavedAddress()">
-            Use Saved Address
-          </button>
-          <button type="button" class="use-current-location btn btn-success" (click)="useCurrentLocation()">
-            Use Current Location
-          </button>
-        </div>
-
-            <google-map
-          height="450px"
-          width="100%"
-          [center]="currentLocation"
-          [zoom]="mapOptions.zoom ?? 12"
-          
+  <h1>Checkout</h1>
+  <form [formGroup]="checkoutForm" (ngSubmit)="checkout()">
+    <div class="checkout-form">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="form-control"
+          placeholder="Enter your email"
+          required
+        />
+        <div
+          *ngIf="
+            checkoutForm.get('email')?.invalid &&
+            (checkoutForm.get('email')?.dirty || checkoutForm.get('email')?.touched)
+          "
+          class="text-danger"
         >
-        </google-map>
-        <!-- Payment Form -->
-        <div id="card-element" class="mt-4" ></div>
-        <button type="submit" class="checkout-button btn btn-primary mt-3" [disabled]="checkoutForm.invalid">Proceed to Payment</button>
-      </div>
-      <div class="order-summary">
-        <h2>Order Summary</h2>
-        <div *ngFor="let item of cartItems" class="order-item">
-          <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+          A valid email is required.
         </div>
-        <p class="total-amount"><strong>Total:</strong> {{ totalAmount | currency }}</p>
       </div>
-    </form>
-  </div>
+
+      <!-- Name Field (for guest checkout) -->
+      <div class="form-group" *ngIf="isGuest">
+        <label for="name">Name:</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          class="form-control"
+          placeholder="Enter your name"
+          required
+        />
+        <div
+          *ngIf="
+            checkoutForm.get('name')?.invalid &&
+            (checkoutForm.get('name')?.dirty || checkoutForm.get('name')?.touched)
+          "
+          class="text-danger"
+        >
+          Name is required.
+        </div>
+      </div>
+
+      <!-- Phone Field (for guest checkout) -->
+      <div class="form-group" *ngIf="isGuest">
+        <label for="phone">Phone:</label>
+        <input
+          id="phone"
+          type="text"
+          formControlName="phone"
+          class="form-control"
+          placeholder="Enter your phone number"
+          required
+        />
+        <div
+          *ngIf="
+            checkoutForm.get('phone')?.invalid &&
+            (checkoutForm.get('phone')?.dirty || checkoutForm.get('phone')?.touched)
+          "
+          class="text-danger"
+        >
+          Phone number is required.
+        </div>
+      </div>
+
+      <!-- Address Field -->
+      <div class="form-group">
+        <label for="address">Shipping Address:</label>
+        <input
+          id="address"
+          type="text"
+          formControlName="address"
+          class="form-control"
+          placeholder="Enter your address"
+          #addressInput
+          required
+        />
+        <div
+          *ngIf="
+            checkoutForm.get('address')?.invalid &&
+            (checkoutForm.get('address')?.dirty || checkoutForm.get('address')?.touched)
+          "
+          class="text-danger"
+        >
+          Address is required.
+        </div>
+      </div>
+
+      <!-- Google Places Autocomplete Prompt -->
+      <div *ngIf="!checkoutForm.get('address')?.value">
+        <p>Please search and select your address from Google Maps below.</p>
+      </div>
+
+      <div class="map-controls">
+        <button type="button" class="move-marker-button btn btn-secondary" (click)="moveMarkerToCenter()">
+          Move Marker to Center
+        </button>
+        <button type="button" class="use-saved-address btn btn-primary" (click)="useSavedAddress()">
+          Use Saved Address
+        </button>
+        <button type="button" class="use-current-location btn btn-success" (click)="useCurrentLocation()">
+          Use Current Location
+        </button>
+      </div>
+
+      <google-map
+        height="450px"
+        width="100%"
+        [center]="currentLocation"
+        [zoom]="mapOptions.zoom ?? 12"
+      >
+      </google-map>
+
+      <!-- Payment Form -->
+      <div id="card-element" class="mt-4"></div>
+      <button type="submit" class="checkout-button btn btn-primary mt-3" [disabled]="checkoutForm.invalid || isLoading">
+        {{ isLoading ? 'Processing...' : 'Proceed to Payment' }}
+      </button>
+      <div class="loading-overlay" *ngIf="isLoading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+    <div class="order-summary">
+      <h2>Order Summary</h2>
+      <div *ngFor="let item of cartItems" class="order-item">
+        <p>{{ item.product.name }} (x{{ item.quantity }}) - {{ item.product.price | currency }}</p>
+      </div>
+      <p class="total-amount"><strong>Total:</strong> {{ totalAmount | currency }}</p>
+    </div>
+  </form>
+</div>

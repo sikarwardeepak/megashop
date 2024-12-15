@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Observable, from } from 'rxjs';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { User } from '../models/user.model';
+import { CartItem } from '../models/cart.model';
 
 export interface Order {
   id: number;
@@ -20,9 +22,9 @@ export interface Order {
   providedIn: 'root',
 })
 export class OrderService {
-  private apiUrl = 'http://localhost:8081/api/orders';
+  private readonly apiUrl = 'http://localhost:8081/api/orders';
   private axiosInstance: AxiosInstance;
-
+  
   constructor() {
     this.axiosInstance = axios.create();
 

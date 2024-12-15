@@ -37,6 +37,11 @@ export class UserService {
     return from(this.axiosInstance.get('/profile').then((response: AxiosResponse) => response.data));
   }
 
+  //implement getUserId() method
+  getUserId(): Observable<any> {
+    return from(this.axiosInstance.get('/profile/id').then((response: AxiosResponse) => response.data));
+  }
+
   updateUserProfile(user: any): Observable<any> {
     return from(this.axiosInstance.put('/profile', user).then((response: AxiosResponse) => response.data));
   }

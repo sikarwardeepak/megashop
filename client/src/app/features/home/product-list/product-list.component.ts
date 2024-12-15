@@ -63,12 +63,13 @@ export class ProductListComponent implements OnInit {
   }
 
   updateProductQuantitiesFromCart(): void {
-    const cartItems = this.cartService.getCartItemsSnapshot();
-    this.products.forEach(product => {
-      const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === product.id);
-      if (cartItem) {
-        product.quantity -= cartItem.quantity;
-      }
+    this.cartService.getCartItemsSnapshot().subscribe(cartItems => {
+      this.products.forEach(product => {
+        const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === product.id);
+        if (cartItem) {
+          product.quantity -= cartItem.quantity;
+        }
+      });
     });
   }
 
@@ -138,7 +139,7 @@ export class ProductListComponent implements OnInit {
 
   addToCart(product: Product): void {
     if (product.quantity > 0) {
-      this.cartService.addToCart(product.id.toString(), 'add');
+      this.cartService.addToCart(product.id, 'add');
       product.quantity--;
       console.log('Product added to cart:', product);
     } else {

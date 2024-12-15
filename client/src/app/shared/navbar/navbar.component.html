@@ -1,6 +1,6 @@
 <nav class="navbar">
     <div class="navbar-container">
-      <a class="navbar-brand" routerLink="/">E-Commerce</a>
+      <a class="navbar-brand" routerLink="/">MegaShop</a>
 
       <div class="search-bar">
         <input type="text" placeholder="Search products..." (input)="onSearch($event)" [(ngModel)]="searchQuery" />
@@ -9,12 +9,12 @@
       <ul class="navbar-links">
         <!-- <li *ngIf="!authService.isAuthenticated()"><a routerLink="/" routerLinkActive="active">Home</a></li> -->
         <!-- <li *ngIf="!authService.isAuthenticated()"><a routerLink="/about" routerLinkActive="active">About</a></li> -->
+        <li ><a [routerLink]="['/cart']" routerLinkActive="active">Cart
+          <span class="badge bg-danger ms-1">{{ totalCartQuantity }}</span>
+        </a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/products" routerLinkActive="active">Products</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/login" routerLinkActive="active">Login</a></li>
         <li *ngIf="!authService.isAuthenticated()"><a routerLink="/register" routerLinkActive="active">Register</a></li>
-        <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a [routerLink]="['/cart']" routerLinkActive="active">Cart
-          <span class="badge bg-danger ms-1">{{ totalCartQuantity }}</span>
-        </a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/order-history" routerLinkActive="active">Order History</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
         <li *ngIf="authService.isAuthenticated() && !authService.isAdmin()"><a (click)="logout()" class="btn btn-danger" routerLinkActive="active" style="color: white; text-decoration: none;">Logout</a></li>

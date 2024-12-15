@@ -1,5 +1,13 @@
-export interface CartItemAdd {
-    publicId: string;
+import {Product} from './product.model';
+
+  export interface CartItemAdd {
+    publicId: number;
+    quantity: number;
+  }
+
+  export interface CartItem {
+    id: number | null;
+    product: Product;
     quantity: number;
   }
   

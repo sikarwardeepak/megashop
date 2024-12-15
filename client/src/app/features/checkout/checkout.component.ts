@@ -7,6 +7,7 @@ import { StripeService } from '../../services/stripe.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { StripeElementsOptions, StripeCardElementOptions, StripeCardElement } from '@stripe/stripe-js';
@@ -31,7 +32,10 @@ export class CheckoutComponent implements OnInit {
   checkoutForm: FormGroup;
   isMapsLoaded: boolean = false;
   mapsLoadError: boolean = false;
-
+  isLoading: boolean = false;
+  isGuest: boolean = false;
+  private cartSubscription!: Subscription;
+   
   @ViewChild(GoogleMap, { static: false }) googleMap!: GoogleMap;
   @ViewChild('addressInput', { static: false }) addressInput!: ElementRef<HTMLInputElement>;
   @ViewChild('map', { static: false }) mapElement!: ElementRef;
@@ -57,19 +61,53 @@ export class CheckoutComponent implements OnInit {
   ) {
     this.checkoutForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      name: ['', this.isGuest ? Validators.required : Validators.nullValidator], // Optional for registered user
+      phone: ['', this.isGuest ? Validators.required : Validators.nullValidator], // Optional for registered user
       address: ['', Validators.required],
       // Add other form controls as needed
     });
   }
 
   async ngOnInit(): Promise<void> {
-    this.cartService.getCartItems().subscribe(items => {
+    this.cartSubscription = this.cartService.addedToCart$.subscribe(items => {
       this.cartItems = items;
-      this.totalAmount = this.cartService.getTotalPrice();
+      this.calculateTotal();
     });
     if (this.authService.isAuthenticated()) {
       this.prefillUserAddress();
     }
+  }
+
+  ngOnDestroy(): void {
+    if (this.cartSubscription) {
+      this.cartSubscription.unsubscribe();
+    }
+  }
+
+  toggleGuestCheckout(): void {
+    this.isGuest = !this.isGuest;
+    if (this.isGuest) {
+      // Clear user-specific fields if switching to guest
+      this.checkoutForm.patchValue({
+        email: '',
+        name: '',
+        phone: '',
+      });
+    } else {
+      // Prefill user data if switching to registered
+      if (this.authService.isAuthenticated()) {
+        this.userService.getUserProfile().subscribe(userData => {
+          this.checkoutForm.patchValue({
+            email: userData.email,
+            address: userData.address,
+          });
+        });
+      }
+    }
+  }
+
+  calculateTotal(): void {
+    this.totalAmount = this.cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   }
 
   ngAfterViewInit(): void {
@@ -319,24 +357,34 @@ export class CheckoutComponent implements OnInit {
     if (error) {
       console.error('Error creating payment method:', error);
       return;
+    } else {
+      this.isLoading = true;
     }
 
-    const session = await this.stripeService.createCheckoutSession(this.cartItems, this.totalAmount).toPromise();
-
-    if (session && session.clientSecret) {
-      const { error: confirmError, paymentIntent } = await this.stripe.confirmCardPayment(session.clientSecret, {
-        payment_method: paymentMethod!.id,
-      });
-
-      if (confirmError) {
-        console.error('Stripe checkout error:', confirmError);
-        this.paymentGuard.setPaymentCompleted(true);
-        this.router.navigate(['/payment-fail']);
-      } else {
-        this.createOrder(true, paymentIntent!.id); // Set paymentSuccessful to true
-        this.paymentGuard.setPaymentCompleted(true);
-        this.router.navigate(['/payment-success']);
+    try {
+      const session = await this.stripeService.createCheckoutSession(this.cartItems, this.totalAmount).toPromise();
+  
+      if (session && session.clientSecret) {
+        const { error: confirmError, paymentIntent } = await this.stripe.confirmCardPayment(session.clientSecret, {
+          payment_method: paymentMethod!.id,
+        });
+  
+        if (confirmError) {
+          console.error('Stripe checkout error:', confirmError);
+          this.paymentGuard.setPaymentCompleted(true);
+          this.router.navigate(['/payment-fail']);
+        } else {
+          this.createOrder(true, paymentIntent!.id); // Set paymentSuccessful to true
+          this.paymentGuard.setPaymentCompleted(true);
+          this.router.navigate(['/payment-success']);
+          this.cartService.clearCart();
+        }
       }
+    } catch (err) {
+      console.error('Checkout process failed:', err);
+    } finally {
+      // Reset loading state regardless of outcome
+      this.isLoading = false;
     }
   }
 
@@ -353,6 +401,22 @@ export class CheckoutComponent implements OnInit {
       paymentIntentId: paymentIntentId,
       // address: address
     };
+
+    const orderData = {
+      items: this.cartItems,
+      totalAmount: this.totalAmount,
+      userData: this.isGuest ? {
+        name: this.checkoutForm.value.name,
+        phone: this.checkoutForm.value.phone,
+        email: this.checkoutForm.value.email,
+        address: this.checkoutForm.value.address,
+      } : {
+        userId: this.userService.getUserId(),
+        email: this.checkoutForm.value.email,
+        address: this.checkoutForm.value.address,
+      }
+    };
+
     this.orderService.createOrder(order).subscribe(
       (response: Order) => {
         console.log('Order created successfully:', response);

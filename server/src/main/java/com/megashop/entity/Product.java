@@ -28,6 +28,8 @@ public class Product {
 
     private String imageUrl; // Optional: URL for the product image
 
+    public Product() {}
+    
     public Long getId() {
         return id;
     }

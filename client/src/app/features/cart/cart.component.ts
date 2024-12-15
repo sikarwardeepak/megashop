@@ -21,12 +21,20 @@ export class CartComponent implements OnInit, OnDestroy {
     private productService: ProductService,
     private router: Router) { }
 
-  ngOnInit(): void {
-    // Subscribe to cart items observable
-    this.cartSubscription = this.cartService.addedToCart.subscribe(items => {
-      this.cartItems = items;
-    });
-  }
+    ngOnInit(): void {
+      // Subscribe to the public Observable
+      this.cartSubscription = this.cartService.addedToCart$.subscribe(
+        (items) => {
+          this.cartItems = items.map(item => ({
+            publicId: item.product.id,
+            quantity: item.quantity
+          }));
+        },
+        (error) => {
+          console.error('Error fetching cart items:', error);
+        }
+      );
+    }
 
   ngOnDestroy(): void {
     // Unsubscribe to prevent memory leaks
@@ -35,15 +43,15 @@ export class CartComponent implements OnInit, OnDestroy {
     }
   }
 
-  increaseQuantity(publicId: string): void {
+  increaseQuantity(publicId: number): void {
     this.cartService.addToCart(publicId, 'add');
   }
 
-  decreaseQuantity(publicId: string): void {
+  decreaseQuantity(publicId: number): void {
     this.cartService.addToCart(publicId, 'remove');
   }
 
-  removeFromCart(publicId: string): void {
+  removeFromCart(publicId: number): void {
     this.cartService.removeFromCart(publicId);
   }
 
@@ -59,7 +67,7 @@ export class CartComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  getProductByPublicId(publicId: string): Product | undefined {
+  getProductByPublicId(publicId: number): Product | undefined {
     const productId = Number(publicId);
     return this.productService.getProductByPublicId(productId);
   }

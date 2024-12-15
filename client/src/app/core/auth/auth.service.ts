@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,9 @@ import {jwtDecode} from 'jwt-decode';
 export class AuthService {
   private apiUrl = 'http://localhost:8081/api/users'; // Replace with your backend API URL
 
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isAuthenticated());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  
   constructor() {}
 
   isAdmin(): boolean {
@@ -68,6 +72,7 @@ export class AuthService {
   // Save JWT token to local storage
   saveToken(token: string) {
     localStorage.setItem('token', token);
+    this.isAuthenticatedSubject.next(true);
   }
 
   // Get saved JWT token
@@ -82,6 +87,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    this.isAuthenticatedSubject.next(false);
   }
 
   getAuthHeader(): { Authorization: string } | {} {

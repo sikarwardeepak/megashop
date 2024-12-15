@@ -52,17 +52,18 @@ export class ProductDetailComponent implements OnInit {
 
   updateProductQuantityFromCart(): void {
     if (this.product) {
-      const cartItems = this.cartService.getCartItemsSnapshot();
-      const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === this.product!.id);
-      if (cartItem) {
-        this.product.quantity -= cartItem.quantity;
-      }
+      this.cartService.getCartItemsSnapshot().subscribe(cartItems => {
+        const cartItem = cartItems.find((item: { product: Product; quantity: number }) => item.product.id === this.product!.id);
+        if (cartItem) {
+          this.product!.quantity -= cartItem.quantity;
+        }
+      });
     }
   }
 
   addToCart(): void {
     if (this.product && this.product.quantity > 0) {
-      this.cartService.addToCart(this.product.id.toString(), 'add');
+      this.cartService.addToCart(this.product.id, 'add');
       this.productService.updateProductQuantity(this.product.id, -1);
       this.product.quantity -= 1; // Update local quantity
       console.log('Product added to cart:', this.product);
